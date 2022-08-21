@@ -34,19 +34,17 @@ struct ConfigEmu
     int hidebios = 0;
     string extlist = "";
 
-    static ConfigEmu load(string json_path, int _id)
+    static ConfigEmu load(const string& json_path, int _id)
     {
         ConfigEmu config;
         Json::Value root;
 
         config.id = _id;
-
-        if (!exists(json_path))
+      
+        ifstream ifs(json_path);
+        if(!ifs.is_open()) {
             return config;
-        
-        ifstream ifs;
-        ifs.open(json_path);
-
+        }
         Json::CharReaderBuilder builder;
         JSONCPP_STRING errs;
 
@@ -84,7 +82,7 @@ struct ConfigEmu
         return config;
     }
 
-    static ConfigEmu load(string json_path)
+    static ConfigEmu load(const std::string& json_path)
     {
         return ConfigEmu::load(json_path, -1);
     }

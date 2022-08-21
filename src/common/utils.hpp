@@ -46,7 +46,7 @@ int exec(string command, string* stdout)
     return WEXITSTATUS(pclose(pipe));
 }
 
-vector<string> split(const string &s, string delim)
+vector<string> split(const string &s, const string& delim)
 {
     size_t last = 0;
     size_t next = 0;

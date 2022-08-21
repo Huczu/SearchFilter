@@ -36,12 +36,12 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    Display* display = new Display();
+    auto display = std::make_unique<Display>();
     string keyword = getFile(ACTIVE_SEARCH);
     int ec = 0;
 
     if (argc >= 2 && string(argv[1]) == "clear") keyword = "";
-    else ec = kbinput(display, "Enter search term", keyword, &keyword);
+    else ec = kbinput(display.get(), "Enter search term", keyword, &keyword);
 
     if (ec == 0) {
         search_icon = IMG_Load("res/icon_search.png");
@@ -68,12 +68,11 @@ int main(int argc, char** argv)
             }
         }
 
-        performSearch(display, keyword);
+        performSearch(display.get(), keyword);
 
         SDL_FreeSurface(search_icon);
         search_icon = NULL;
     }
 
-    delete display;
     return 0;
 }

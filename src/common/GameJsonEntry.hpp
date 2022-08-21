@@ -1,5 +1,4 @@
-#if !defined(GAME_ENTRY_HPP__)
-#define GAME_ENTRY_HPP__
+#pragma once
 
 #include <string>
 #include <fstream>
@@ -13,10 +12,9 @@ using std::ifstream;
 using std::vector;
 
 #include "utils.hpp"
-
-#define RECENTLIST_PATH "/mnt/SDCARD/Roms/recentlist.json"
-#define RECENTLIST_HIDDEN_PATH "/mnt/SDCARD/Roms/recentlist-hidden.json"
-#define FAVORITES_PATH "/mnt/SDCARD/Roms/favourite.json"
+static constexpr auto RECENTLIST_PATH = "/mnt/SDCARD/Roms/recentlist.json";
+static constexpr auto RECENTLIST_HIDDEN_PATH = "/mnt/SDCARD/Roms/recentlist-hidden.json";
+static constexpr auto FAVORITES_PATH = "/mnt/SDCARD/Roms/favourite.json";
 
 struct GameJsonEntry
 {
@@ -27,7 +25,7 @@ struct GameJsonEntry
     string imgpath = "";
     string emupath = "";
 
-    static GameJsonEntry fromJson(string json_str)
+    static GameJsonEntry fromJson(const string& json_str)
     {
         GameJsonEntry entry;
         Json::Value root;
@@ -38,21 +36,21 @@ struct GameJsonEntry
             return entry;
         }
 
-        auto addString = [root](string key, string* dst) {
+        auto getString = [&root](const string& key) {
             if (root.isMember(key))
-                *dst = root[key].asString();
+                return root[key].asString();
         };
 
-        auto addInt = [root](string key, int* dst) {
+        auto getInt = [&root](const string& key) {
             if (root.isMember(key))
-                *dst = root[key].asInt();
+                return root[key].asInt();
         };
 
-        addString("label", &entry.label);
-        addString("launch", &entry.launch);
-        addInt("type", &entry.type);
-        addString("rompath", &entry.rompath);
-        addString("imgpath", &entry.imgpath);
+        entry.label = getString("label");
+        entry.launch = getString("launch");
+        entry.type = getInt("type");
+        entry.rompath = getString("rompath");
+        entry.imgpath = getString("imgpath");
 
         if (entry.rompath.find(":") != string::npos) {
             vector<string> tokens = split(entry.rompath, ":");
@@ -67,7 +65,7 @@ struct GameJsonEntry
         return entry;
     }
 
-    string toJson(void)
+    string toJson() const
     {
         string json_str = "{";
         json_str += "\"label\":\"" + label + "\",";
@@ -81,14 +79,12 @@ struct GameJsonEntry
     }
 };
 
-vector<GameJsonEntry> loadGameJsonEntries(string json_path)
+vector<GameJsonEntry> loadGameJsonEntries(const string& json_path)
 {
-    vector<GameJsonEntry> entries;
-    
-    if (!exists(json_path))
-        return entries;
-
+    vector<GameJsonEntry> entries;    
     ifstream infile(json_path);
+    if (!infile.is_open())
+        return entries;
 
     string line;
     while (getline(infile, line)) {
@@ -102,5 +98,3 @@ vector<GameJsonEntry> loadGameJsonEntries(string json_path)
 
     return entries;
 }
-
-#endif // GAME_ENTRY_HPP__

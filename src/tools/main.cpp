@@ -5,10 +5,9 @@
 #include <iostream>
 #include <string>
 #include <unistd.h>
-using std::string;
+#include <memory>
 
-#include "../common/display.hpp"
-
+#include "common/display.hpp"
 #include "tools.hpp"
 
 int main(int argc, char** argv)
@@ -34,8 +33,11 @@ int main(int argc, char** argv)
         }
     }
 
-    Display* display = show_display ? new Display() : NULL;
-    auto flipText = [display](string text) {
+    std::unique_ptr<Display> display;
+    if(show_display) {
+        display = std::make_unique<Display>();
+    }
+    auto flipText = [&display](const string& text) {
         if (display) {
             display->flipText(text);
             sleep(1);
@@ -64,6 +66,5 @@ int main(int argc, char** argv)
         flipText("Recent list cleaned");
     }
 
-    delete display;
     return 0;
 }

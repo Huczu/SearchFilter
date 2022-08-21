@@ -120,15 +120,11 @@ public:
     void blit(SDL_Surface* src, Rect* srcrect, Rect dstrect);
     void blit(SDL_Surface* src, Rect srcrect, Rect* dstrect);
     void blit(SDL_Surface* src, Rect srcrect, Rect dstrect);
-    Rect text(std::string value, Rect* dstrect, TTF_Font* font = NULL, SDL_Color* color = NULL, int center = CENTER_NONE);
-    Rect text(std::string value, Rect dstrect, TTF_Font* font = NULL, SDL_Color* color = NULL, int center = CENTER_NONE);
-    Rect text(std::string value, Rect dstrect, TTF_Font* font, SDL_Color color, int center = CENTER_NONE);
-    Rect centerText(std::string value, Rect* dstrect, TTF_Font* font = NULL, SDL_Color* color = NULL);
-    Rect centerText(std::string value, Rect dstrect, TTF_Font* font = NULL, SDL_Color* color = NULL);
-    Rect centerText(std::string value, Rect dstrect, TTF_Font* font, SDL_Color color);
-    void flipText(std::string value);
-    int textWidth(std::string value, TTF_Font* font = NULL);
-    int textHeight(std::string value, TTF_Font* font = NULL);
+    Rect text(const std::string& value, const Rect& dstrect, TTF_Font* font = NULL, SDL_Color* color = NULL, int center = CENTER_NONE);
+    Rect centerText(const std::string& value, const Rect& dstrect, TTF_Font* font = NULL, SDL_Color* color = NULL);
+    void flipText(const std::string& value);
+    int textWidth(const std::string& value, TTF_Font* font = NULL);
+    int textHeight(const std::string& value, TTF_Font* font = NULL);
     void clear(void);
     void flip(void);
 };
@@ -234,37 +230,37 @@ void Display::blit(SDL_Surface* src, Rect* srcrect, Rect dstrect) { blit(src, sr
 void Display::blit(SDL_Surface* src, Rect srcrect, Rect* dstrect) { blit(src, &srcrect, dstrect); }
 void Display::blit(SDL_Surface* src, Rect srcrect, Rect dstrect) { blit(src, &srcrect, &dstrect); }
 
-Rect Display::text(std::string value, Rect* dstrect, TTF_Font* font, SDL_Color* color, int center)
+Rect Display::text(const std::string& value, const Rect& dstrect, TTF_Font* font, SDL_Color* color, int center)
 {
     SDL_Surface* text = TTF_RenderUTF8_Blended(
         !font ? fonts.regular : font,
         value.c_str(),
         !color ? COLOR_FG : *color
     );
-    Rect srcrect = {dstrect->x, dstrect->y, text->w, text->h};
+    Rect srcrect = {dstrect.x, dstrect.y, text->w, text->h};
 
-    int x = center == CENTER_BOTH || center == CENTER_H ? dstrect->x - text->w / 2 : dstrect->x;
-    int y = center == CENTER_BOTH || center == CENTER_V ? dstrect->y - text->h / 2 : dstrect->y;
+    int x = center == CENTER_BOTH || center == CENTER_H ? dstrect.x - text->w / 2 : dstrect.x;
+    int y = center == CENTER_BOTH || center == CENTER_V ? dstrect.y - text->h / 2 : dstrect.y;
 
     blit(text, {x, y});
     SDL_FreeSurface(text);
 
     return srcrect;
 }
-Rect Display::text(std::string value, Rect dstrect, TTF_Font* font, SDL_Color* color, int center) { return text(value, &dstrect, font, color, center); }
-Rect Display::text(std::string value, Rect dstrect, TTF_Font* font, SDL_Color color, int center) { return text(value, &dstrect, font, &color, center); }
-Rect Display::centerText(std::string value, Rect* dstrect, TTF_Font* font, SDL_Color* color) { return text(value, dstrect, font, color, CENTER_BOTH); }
-Rect Display::centerText(std::string value, Rect dstrect, TTF_Font* font, SDL_Color* color) { return text(value, &dstrect, font, color, CENTER_BOTH); }
-Rect Display::centerText(std::string value, Rect dstrect, TTF_Font* font, SDL_Color color) { return text(value, &dstrect, font, &color, CENTER_BOTH); }
 
-void Display::flipText(string value)
+Rect Display::centerText(const std::string &value, const Rect &dstrect, TTF_Font *font, SDL_Color *color) 
+{ 
+    return text(value, dstrect, font, color, CENTER_BOTH); 
+}
+
+void Display::flipText(const string& value)
 {
     clear();
     centerText(value, SCREEN_CENTER, fonts.display);
     flip();
 }
 
-int Display::textWidth(std::string value, TTF_Font* font)
+int Display::textWidth(const std::string& value, TTF_Font* font)
 {
     SDL_Surface* text = TTF_RenderUTF8_Blended(!font ? fonts.regular : font, value.c_str(), COLOR_FG);
     int text_width = text->w;
@@ -272,7 +268,7 @@ int Display::textWidth(std::string value, TTF_Font* font)
     return text_width;
 }
 
-int Display::textHeight(std::string value, TTF_Font* font)
+int Display::textHeight(const std::string& value, TTF_Font* font)
 {
     SDL_Surface* text = TTF_RenderUTF8_Blended(!font ? fonts.regular : font, value.c_str(), COLOR_FG);
     int text_height = text->h;

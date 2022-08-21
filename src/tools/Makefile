@@ -20,11 +20,12 @@ endif
 ###########################################################
 
 CC = $(CROSS_COMPILE)g++
-CFLAGS = -I../../include -I../common -DVERSION=\"$(VERSION)\" -DPLATFORM_$(shell echo $(PLATFORM) | tr a-z A-Z)
+CFLAGS = -I../../include -I../ -DVERSION=\"$(VERSION)\" -DPLATFORM_$(shell echo $(PLATFORM) | tr a-z A-Z)
 LDFLAGS = -s -lSDL -lSDL_image -lSDL_ttf -lrt -lz -lm
 OPTM=-O3
+STDFLAG = -std=c++17
 
 build:
-	$(CC) -o $(BUILD_DIR)/$(TARGET) main.cpp ../../include/jsoncpp.cpp $(CFLAGS) $(LDFLAGS) $(OPTM) -ldl -rdynamic -Wno-psabi
+	$(CC) -o $(BUILD_DIR)/$(TARGET) main.cpp ../../include/jsoncpp.cpp $(CFLAGS) $(LDFLAGS) $(OPTM) $(STDFLAG) -ldl -rdynamic -Wno-psabi
 clean:
 	rm -f $(BUILD_DIR)/$(TARGET)
